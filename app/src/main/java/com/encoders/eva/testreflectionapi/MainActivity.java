@@ -5,7 +5,12 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,7 +19,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        doReflextionOperation();
+//        doReflextionOperation();
+        TestModel testModelObject = new TestModel("aa", "bb", "cc", "dd", "ee");
+        callAllGetterMethodsInTestModel(testModelObject);
     }
 
     private void doReflextionOperation() {
@@ -28,6 +35,23 @@ public class MainActivity extends AppCompatActivity {
         for (Method method :
                 methods) {
             Log.d("sayanReflextion",method.getName());
+        }
+    }
+
+    private void callAllGetterMethodsInTestModel(TestModel testModelObject) {
+        try {
+            Class testModelClass = Class.forName("com.encoders.eva.testreflectionapi.TestModel");
+            Method[] methods = testModelClass.getDeclaredMethods();
+            ArrayList<String> getterResults = new ArrayList<>();
+            for (Method method :
+                    methods) {
+                if (method.getName().startsWith("get")){
+                    getterResults.add((String) method.invoke(testModelObject));
+                }
+            }
+            Log.d("sayanReflextion", "==>: "+getterResults.toString());
+        } catch (ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 }
